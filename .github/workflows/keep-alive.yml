@@ -1,0 +1,11 @@
+name: Keep Frontend Alive
+on:
+  schedule:
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping frontend homepage
+        run: curl -f https://e-jobs-frontend.onrender.com/
