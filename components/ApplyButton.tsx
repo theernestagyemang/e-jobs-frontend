@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { useAuth } from "@/components/AuthProvider";
@@ -30,19 +31,49 @@ export default function ApplyButton({ jobId }: { jobId: string }) {
     return <div className="h-10" aria-hidden />;
   }
 
-  if (!user || user.role !== "JOB_SEEKER") {
+  // Signed out: the button is the call to action, so it must lead somewhere.
+  if (!user) {
+    return (
+      <div className="flex flex-wrap items-center gap-3">
+        <Link href="/login" className={btnPrimary}>
+          Apply for this role
+        </Link>
+        <p className="text-sm text-slate-500">
+          <Link
+            href="/login"
+            className="font-medium text-indigo-600 underline underline-offset-2 hover:text-indigo-700"
+          >
+            Log in as a Job Seeker
+          </Link>{" "}
+          to apply, or{" "}
+          <Link
+            href="/register"
+            className="font-medium text-indigo-600 underline underline-offset-2 hover:text-indigo-700"
+          >
+            create an account
+          </Link>
+          .
+        </p>
+      </div>
+    );
+  }
+
+  // Signed in, but as someone who cannot apply — sending them to /login would
+  // be wrong, since they are already authenticated.
+  if (user.role !== "JOB_SEEKER") {
+    const role = user.role === "EMPLOYER" ? "an employer" : "an administrator";
     return (
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           disabled
-          title="Log in as a Job Seeker to apply"
+          title="Only job seekers can apply"
           className={`${btnPrimary} cursor-not-allowed`}
         >
           Apply for this role
         </button>
         <p className="text-sm text-slate-500">
-          Log in as a Job Seeker to apply.
+          You&apos;re signed in as {role} — only job seekers can apply.
         </p>
       </div>
     );
